@@ -1,4 +1,3 @@
-c     Program Cligen. WEPP Water Erosion Project Durant, OK.  Version 4.2
 c
 c     Please address inquiries to
 c
@@ -8,7 +7,8 @@ c         1196 Building SOIL
 c         West Lafayette, IN 47907-1196
 c         Phone 765 494-8673
 c
-c     Version 4.2 April 1997  West Lafayette, IN.
+c     Version 4.3 July 1998  West Lafayette, IN.
+c     Changes to allow reading of data from any single station parameter file.
 c     Correction of version numbers.
 c     Multiple year generation, output file, and summary added
 c     Dewpoint temperature added with wind speed and velocity
@@ -61,7 +61,7 @@ c
 c     character*6 nstat
       character*41 stid
       character*41 stidd
-      character*51 outfil,infile
+      character*51 outfil,infile,filein
       character*20 county
 
       data dr/'al','az','ar','ca','co','ct','de','fl','ga','id',
@@ -74,84 +74,95 @@ c     character*6 nstat
       data tymax/180.34,154.94,307.34,330.2/
       timpkd(0)=0.0
 c     Version number set here for option 5 output header
-      version=4.2
+      version=4.3
+      iyear=1
 c
       call header
       write(*,*)' Press Enter to Continue'
       read(*,'(a1)')yc
- 10   write(*,380)
-      write(*,360)
-      write(*,370)
-      write(*,700)
-      read(*,390,err=15)istate
-      go to 16
-15    write(*,*)' Error Entering State Code '
-      write(*,*)
-      write(*,*)' Press Enter to Continue'
-      read(*,'(a1)')yc
-      go to 10
-16    if(istate.eq.99) then
-        iscnt = 1
-        iyr = 0
-        go to 50
-      end if
-      open(11,file='stations',status='old')
-      rewind (11)
-      iscnt=0
-      iyr=0
-      write(*,710)
-      kknt=0
- 20   read(11,410,end=30)stid,nstate
-      if(nstate.eq.istate) then
-         kknt=kknt+1
-         iscnt=iscnt+1
-         backspace(11)
-         read(11,420)stid,nst,nstat,lat,long,county
-           if(kknt.gt.20) then
-           kknt=0
-           write(*,*) 'Press "ENTER" to continue.'
-           read(*,'(a1)') yc
-           endif
-         write(*,430)stid,nstat,lat,long,county
-      endif
-      if(nstate.gt.istate) go to 30
-      go to 20
- 30   close (11)
-      if(iscnt.gt.0) go to 50
- 40   write(*,720)
-      read(*,660) yc
-      if(yc.eq.'y'.or.yc.eq.'Y') go to 10
-      go to 230
- 50   write(*,730)
-      iname = istate
-      if(iname.eq.66) iname=52
-      if(iname.eq.91) iname=53
-      if(iname.eq.99) iname=54
-      read(*,440)index
-      open(10,file=dr(iname),status='old',err=55)
-      rewind (10)
-      go to 60
- 55   write(*,*)'  Mother Nature does not want to run state ',dr(iname)
-      write(*,*)'  Parameters for this state are not loaded on '
-      write(*,*)'  this computer.  Check directory for file ',dr(iname)
-      write(*,*)'  -- Enter q to quit or c to Continue'
-      read(*,660) yc
-      if(yc.eq.'q'.or.yc.eq.'Q') then
-       go to 230
-      else
-       go to 10
-      endif
+c CODE COMMENTED OUT BY DCF - TO REMOVE USE OF STATIONS FILE 7/27/98
+c10   write(*,380)
+c     write(*,360)
+c     write(*,370)
+c     write(*,700)
+c     read(*,390,err=15)istate
+c     go to 16
+c15   write(*,*)' Error Entering State Code '
+c     write(*,*)
+c     write(*,*)' Press Enter to Continue'
+c     read(*,'(a1)')yc
+c     go to 10
+c16   if(istate.eq.99) then
+c       iscnt = 1
+c       iyr = 0
+c       go to 50
+c     end if
+c     open(11,file='stations',status='old')
+c     rewind (11)
+c     iscnt=0
+c     iyr=0
+c     write(*,710)
+c     kknt=0
+c20   read(11,410,end=30)stid,nstate
+c     if(nstate.eq.istate) then
+c        kknt=kknt+1
+c        iscnt=iscnt+1
+c        backspace(11)
+c        read(11,420)stid,nst,nstat,lat,long,county
+c          if(kknt.gt.20) then
+c          kknt=0
+c          write(*,*) 'Press "ENTER" to continue.'
+c          read(*,'(a1)') yc
+c          endif
+c        write(*,430)stid,nstat,lat,long,county
+c     endif
+c     if(nstate.gt.istate) go to 30
+c     go to 20
+c30   close (11)
+c     if(iscnt.gt.0) go to 50
+c40   write(*,720)
+c     read(*,660) yc
+c     if(yc.eq.'y'.or.yc.eq.'Y') go to 10
+c     go to 230
+c50   write(*,730)
+c     iname = istate
+c     if(iname.eq.66) iname=52
+c     if(iname.eq.91) iname=53
+c     if(iname.eq.99) iname=54
+c     read(*,440)index
+c     open(10,file=dr(iname),status='old',err=55)
+c     rewind (10)
+c     go to 60
+c55   write(*,*)'  Mother Nature does not want to run state ',dr(iname)
+c     write(*,*)'  Parameters for this state are not loaded on '
+c     write(*,*)'  this computer.  Check directory for file ',dr(iname)
+c     write(*,*)'  -- Enter q to quit or c to Continue'
+c     read(*,660) yc
+c     if(yc.eq.'q'.or.yc.eq.'Q') then
+c      go to 230
+c     else
+c      go to 10
+c     endif
+c CODE ABOVE COMMENTED OUT BY DCF - TO REMOVE USE OF STATIONS FILE 7/27/98
 
 c    Gettin Station from State File
- 60   read(10,450,end=40)stidd,nst,nstat,igcode
-      if(nst.ne.istate) then
-         read(10,460)
-         go to 60
-      endif
-      if(nstat.ne.index) then
-         read(10,460)
-         go to 60
-      endif
+c60   read(10,450,end=40)stidd,nst,nstat,igcode
+c     if(nst.ne.istate) then
+c        read(10,460)
+c        go to 60
+c     endif
+c     if(nstat.ne.index) then
+c        read(10,460)
+c        go to 60
+c     endif
+
+      index=1
+ 10   continue
+      write(*,725)
+      read(*,640)filein
+      open(10,file=filein,status='old',err=10)
+      read(10,450)stidd,nst,nstat,igcode
+      
 
 c     Read Precipitation, Temperature, Radiation, etc.
 c     ylt         - Latitude.
@@ -676,7 +687,7 @@ c    Check for Another Run or End
  630  format(1x,12f6.1)
  640  format(a51)
  642  format(f5.2)
- 644  format('   Station: ',a41,6x,' CLIGEN VERSION 4.2',/
+ 644  format('   Station: ',a41,6x,' CLIGEN VERSION 4.3',/
      1       ' Latitude Longitude Elevation (m) Obs. Years ',
      1       '  Beginning year  Years simulated',/
      1 2f9.2,i12,2i12,i16)
@@ -698,6 +709,7 @@ c650  format(2i3,i5,f6.1,f6.2,f6.2,f7.2,2f6.1,f5.0,f5.1,f5.0,f6.1)
      11x,8('-'),1x,9('-'),19x,17('-'),2x,4('-'),1x,7('-')/)
  720  format(/1x,'No stations available - do you want to',
      1' continue (y/n)? ')
+ 725  format(/1x,'Enter the name of your CLIGEN parameter file: ')
  730  format(/1x,'Enter the station index: ')
  750  format(/1x,'Weather Generator Options',/,1x,7('-'),1x,
      19('-'),1x,7('-'),//,1x,'1 - Single Year Simulation - Screen',/,
@@ -1217,9 +1229,9 @@ c     Subroutine to write header information to screen.
      1       ' AND',21x,'*',/,
      1       2x,'*',23x,'SINGLE STORM OPTIONS',23x,'*',/,
      1       2x,'*',66x,'*',/,
-     1       2x,'*',66x,'*',/,2x,'*',27x,'VERSION  4.2',27x,'*',/,
+     1       2x,'*',66x,'*',/,2x,'*',27x,'VERSION  4.3',27x,'*',/,
      1       2x,'*',66x,'*',/,
-     1       2x,'*',26x,'  April 1997  ',26x,'*',/,2x,'*',66x,'*',/,
+     1       2x,'*',26x,'  July  1998  ',26x,'*',/,2x,'*',66x,'*',/,
      1       2x,'*',66x,'*',/,2x,68('*'),//)
       return
       end
@@ -1243,3 +1255,4 @@ c     each station location.
          timepk=0.08333*int - ratio*0.08333
       return
       end
+
