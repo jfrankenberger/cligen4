@@ -1,6 +1,6 @@
 # CLIGEN Version 4 
 
-**More recent versions of CLIGEN are found in the CLIGEN 5 repository**
+**More recent versions of CLIGEN are found in the CLIGEN 5 repository** (https://github.com/jfrankenberger/cligen5)
 
 Cligen (ClImate GENerator) is a stochastic weather generator which produces daily estimates of precipitation, temperature, dewpoint, wind, and solar radiation for a single geographic point, using monthly parameters (means, SD's, skewness, etc.) derived from the historic measurements. 
 Unlike other climate generators, it produces individual storm parameter estimates, including time to peak, peak intensity, and storm duration, which are required to run the WEPP and the WEPS soil erosion models. 
